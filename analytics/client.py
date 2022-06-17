@@ -11,10 +11,8 @@ from analytics.utils import guess_timezone, clean
 from analytics.consumer import Consumer
 from analytics.version import VERSION
 
-try:
-    import queue
-except:
-    import Queue as queue
+from queue import Full
+from multiprocessing import JoinableQueue
 
 
 ID_TYPES = (numbers.Number, string_types)
@@ -28,7 +26,7 @@ class Client(object):
                  send=True, on_error=None):
         require('write_key', write_key, string_types)
 
-        self.queue = queue.Queue(max_queue_size)
+        self.queue = JoinableQueue(max_queue_size)
         self.consumer = Consumer(self.queue, write_key, host=host, on_error=on_error)
         self.write_key = write_key
         self.on_error = on_error
@@ -220,7 +218,7 @@ class Client(object):
             self.queue.put(msg, block=False)
             self.log.debug('enqueued %s.', msg['type'])
             return True, msg
-        except queue.Full:
+        except Full:
             self.log.warn('analytics-python queue is full')
             return False, msg
 

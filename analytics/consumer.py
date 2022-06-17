@@ -4,10 +4,8 @@ from threading import Thread
 from analytics.version import VERSION
 from analytics.request import post
 
-try:
-    from queue import Empty
-except:
-    from Queue import Empty
+from queue import Empty
+
 
 class Consumer(Thread):
     """Consumes the messages from the client's queue."""
